@@ -1,7 +1,7 @@
 const express = require('express');
 const route = express.Router();
 
-const {getAllProfilPemerintah, addProfilPemerintah, deleteProfilPemerintah, updateProfilPemerintah} = require('../handler/kpuHandler');
+const {getAllProfilPemerintah, addProfilPemerintah, deleteProfilPemerintah, updateProfilPemerintah} = require('../../handler/kpuHandler');
 
 route
 .get('/kpu', getAllProfilPemerintah)
