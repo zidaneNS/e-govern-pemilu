@@ -36,7 +36,11 @@ const addProfilPemerintah = (req, res) => {
             res.status(201).json({
                 status: 'success',
                 message: 'data added successfuly',
-                data: results
+                data: {
+                    id: results.insertId,
+                    nip,
+                    nama
+                }
             })
         }
     })
@@ -59,7 +63,6 @@ const deleteProfilPemerintah = (req, res) => {
                 res.status(200).json({
                     status: 'success',
                     message: 'data deleted successfuly',
-                    data: results
                 })
             } else {
                 res.status(404).json({
@@ -88,7 +91,11 @@ const updateProfilPemerintah = (req, res) => {
                 res.status(200).json({
                     status: 'success',
                     message: 'success updating data',
-                    data: results
+                    data: {
+                        id,
+                        nip,
+                        nama
+                    }
                 })
             } else {
                 res.status(404).json({
