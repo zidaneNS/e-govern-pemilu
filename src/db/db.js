@@ -1,5 +1,6 @@
 const mysql = require('mysql2');
 
+// membuat pool untuk mengakses database
 const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',

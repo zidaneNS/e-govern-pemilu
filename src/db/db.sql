@@ -8,7 +8,8 @@ USE citech_kpu;
 CREATE TABLE IF NOT EXISTS profil_pemerintah (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nip VARCHAR(255),
-    nama VARCHAR(255)
+    nama VARCHAR(255),
+    password VARCHAR(255)
 );
 
 -- Membuat tabel profil panitia

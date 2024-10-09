@@ -22,9 +22,12 @@ const getAllProfilPemerintah = (req, res) => {
 
 // menambahkan profil pemerintah
 const addProfilPemerintah = (req, res) => {
-    const {nip, nama} = req.body;
+    // mengambil nilai yang terdapat pada request body
+    const {nip, nama, password} = req.body;
 
-    pool.query('INSERT INTO profil_pemerintah (nip, nama) VALUES (?,?)', [nip, nama], (err, results) => {
+    // melakukan query pada pool
+    pool.query('INSERT INTO profil_pemerintah (nip, nama, password) VALUES (?,?,?)', [nip, nama, password], (err, results) => {
+        // mengirimkan hasil dari query
         if (err) {
             console.log('error adding data', err)
             res.status(500).json({
@@ -39,7 +42,8 @@ const addProfilPemerintah = (req, res) => {
                 data: {
                     id: results.insertId,
                     nip,
-                    nama
+                    nama,
+                    password
                 }
             })
         }
@@ -48,9 +52,12 @@ const addProfilPemerintah = (req, res) => {
 
 // menghapus profil pemerintah berdasarkan id
 const deleteProfilPemerintah = (req, res) => {
+    // mengambil nilai id dari parameter request
     const {id} = req.body;
 
+    // melakukan query pada pool
     pool.query(`DELETE FROM profil_pemerintah WHERE id=${id}`, (err, results) => {
+        // mengirimkan hasil query
         if (err) {
             console.log('Error deleting data', err);
             res.status(500).json({
@@ -59,11 +66,13 @@ const deleteProfilPemerintah = (req, res) => {
                 err
             })
         } else {
+            // jika terdapat data yang berubah maka respon sukses
             if (results.affectedRows > 0) {
                 res.status(200).json({
                     status: 'success',
                     message: 'data deleted successfuly',
                 })
+            // jika tidak ada yang berubah maka respon gagal
             } else {
                 res.status(404).json({
                     status: 'fail',
@@ -74,11 +83,16 @@ const deleteProfilPemerintah = (req, res) => {
     })
 };
 
+// mengudate data profil pemerintah
 const updateProfilPemerintah = (req, res) => {
-    const {nip, nama} = req.body;
+    // mengambil data dari request body
+    const {nip, nama, password} = req.body;
+    // mengambil id dari parameter request
     const id = parseInt(req.params.id);
 
-    pool.query('UPDATE profil_pemerintah SET nip=?, nama=? WHERE id=?', [nip, nama, id], (err, results) => {
+    // melakukan query pada pool
+    pool.query('UPDATE profil_pemerintah SET nip=?, nama=?, password=? WHERE id=?', [nip, nama, password, id], (err, results) => {
+        // mengirimkan hasil query
         if (err) {
             console.log('error updating data');
             res.status(500).json({
@@ -87,6 +101,7 @@ const updateProfilPemerintah = (req, res) => {
                 err
             })
         } else {
+            // jika terdapat data yang berubah maka respon sukses
             if (results.affectedRows > 0) {
                 res.status(200).json({
                     status: 'success',
@@ -94,9 +109,11 @@ const updateProfilPemerintah = (req, res) => {
                     data: {
                         id,
                         nip,
-                        nama
+                        nama,
+                        password
                     }
                 })
+            // jika tidak ada data yang berubah maka respon gagal
             } else {
                 res.status(404).json({
                     status: 'fail',

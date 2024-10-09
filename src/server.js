@@ -1,9 +1,10 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const api_key = require('./middleware/api_key.js');
 const PORT = process.env.PORT || 5000;
 
+// mengambil custom middleware
+const api_key = require('./middleware/api_key.js');
 const root = require('./routes/root.js');
 const profil_pemerintah = require('./routes/API/profil_pemerintah.js');
 const profil_panitia = require('./routes/API/profil_panitia.js');
