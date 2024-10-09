@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS profil_panitia (
 CREATE TABLE IF NOT EXISTS partai (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nama VARCHAR(255),
-    logo VARCHAR(255)
+    logoUrl VARCHAR(255)
 );
 
 -- Membuat tabel caleg
@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS caleg (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_partai INT,
     nama VARCHAR(255),
-    foto VARCHAR(255),
+    imgUrl VARCHAR(255),
     id_pegawai INT,
-    id_dapil INT,
+    category ENUM ('presiden wapres', 'dpr') NOT NULL,
     FOREIGN KEY (id_partai) REFERENCES partai(id),
     FOREIGN KEY (id_pegawai) REFERENCES profil_pemerintah(id)
 );

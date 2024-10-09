@@ -2,13 +2,13 @@ const express = require('express');
 const route = express.Router();
 
 route
-.all('/', (req, res) => {
-    res.redirect('http://localhost:3000/profil_pemerintah.php');
+.get('/', (req, res) => {
+    res.redirect('http://localhost:80/front-end-pemilu/profil_pemerintah.php');
 });
 
 route
 .get('/profil_panitia', (req, res) => {
-    res.redirect('http://localhost:3000/profil_panitia.php');
+    res.redirect('http://localhost:80/front-end-pemilu/profil_panitia.php');
 })
 
 module.exports = route
