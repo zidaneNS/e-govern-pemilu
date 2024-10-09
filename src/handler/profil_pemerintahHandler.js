@@ -53,7 +53,7 @@ const addProfilPemerintah = (req, res) => {
 // menghapus profil pemerintah berdasarkan id
 const deleteProfilPemerintah = (req, res) => {
     // mengambil nilai id dari parameter request
-    const {id} = req.body;
+    const id = req.params.id;
 
     // melakukan query pada pool
     pool.query(`DELETE FROM profil_pemerintah WHERE id=${id}`, (err, results) => {

@@ -9,6 +9,6 @@ route
 .get('/', getAllProfilPanitia)
 .post('/', addProfilPanitia)
 .delete('/:id', deleteProfilPanitia)
-.put('/:id', updateProfilPanitia)
+.put('/:id', updateProfilPanitia);
 
 module.exports = route;

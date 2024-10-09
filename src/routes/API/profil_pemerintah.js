@@ -9,6 +9,6 @@ route
 .get('/', getAllProfilPemerintah)
 .post('/', addProfilPemerintah)
 .put('/:id', updateProfilPemerintah)
-.delete('/', deleteProfilPemerintah)
+.delete('/:id', deleteProfilPemerintah);
 
 module.exports = route;
