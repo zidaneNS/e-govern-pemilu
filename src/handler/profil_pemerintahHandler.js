@@ -8,17 +8,45 @@ const getAllProfilPemerintah = (req, res) => {
             res.status(500).json({
                 success: false,
                 message: 'query error',
-                data : err
+                err
             });
         } else {
             res.status(200).json({
                 success: true,
                 message: 'success retrieving all datas',
                 data : results
-            })
+            });
         }
     })
 };
+
+const getProfilPemerintahById = (req, res) => {
+    const id = req.params.id;
+
+    pool.query('SELECT * FROM profil_pemerintah WHERE id=?', [id], (err, results) => {
+        if (err) {
+            console.log('query error', err);
+            res.status(500).json({
+                success: false,
+                message: 'query error',
+                err
+            });
+        } else {
+            if (results.length > 0) {
+                res.status(200).json({
+                    success: true,
+                    message: `retrieving data with id ${id}`,
+                    data: results
+                });
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: 'id not found'
+                });
+            }
+        }
+    })
+}
 
 // menambahkan profil pemerintah
 const addProfilPemerintah = (req, res) => {
@@ -124,4 +152,4 @@ const updateProfilPemerintah = (req, res) => {
     })
 };
 
-module.exports = {getAllProfilPemerintah, addProfilPemerintah, deleteProfilPemerintah, updateProfilPemerintah};
+module.exports = {getAllProfilPemerintah, getProfilPemerintahById, addProfilPemerintah, deleteProfilPemerintah, updateProfilPemerintah};

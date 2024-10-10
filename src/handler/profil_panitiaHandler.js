@@ -24,6 +24,34 @@ const getAllProfilPanitia = (req, res) => {
     })
 };
 
+const getProfilPanitiaById = (req, res) => {
+    const id = req.params.id;
+
+    pool.query('SELECT * FROM profil_panitia WHERE id=?', [id], (err, results) => {
+        if (err) {
+            console.log('query error', err);
+            res.status(500).json({
+                success: false,
+                message: 'query error',
+                err
+            });
+        } else {
+            if (results.length > 0) {
+                res.status(200).json({
+                    success: true,
+                    message: `retrieving data with id ${id}`,
+                    data: results
+                });
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: 'id not found'
+                });
+            }
+        }
+    })
+}
+
 // menambah data profil panitia
 const addProfilPanitia = (req, res) => {
     // mengambil nilai yang terdapat pada request body
@@ -128,4 +156,4 @@ const updateProfilPanitia = (req, res) => {
     })
 };
 
-module.exports = {getAllProfilPanitia, addProfilPanitia, deleteProfilPanitia, updateProfilPanitia};
+module.exports = {getAllProfilPanitia, getProfilPanitiaById, addProfilPanitia, deleteProfilPanitia, updateProfilPanitia};
