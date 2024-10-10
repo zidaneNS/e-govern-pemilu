@@ -11,4 +11,9 @@ route
     res.redirect('http://localhost:80/front-end-pemilu/profil_panitia.php');
 })
 
+route
+.get('/partai', (req, res) => {
+    res.redirect('http://localhost:80/front-end-pemilu/partai.php');
+})
+
 module.exports = route

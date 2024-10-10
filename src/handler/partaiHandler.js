@@ -33,7 +33,7 @@ const addPartai = (req, res) => {
         })
     }
 
-    const logoUrl = req.file.path;
+    const logoUrl = `${req.protocol}://${req.get('host')}/kpu/uploads/logoPartai/${req.file.filename}`;
 
     pool.query('INSERT INTO partai (nama, logoUrl) VALUES (?,?)', [nama, logoUrl], (err, results) => {
         if (err) {

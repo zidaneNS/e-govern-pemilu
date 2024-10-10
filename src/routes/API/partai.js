@@ -1,7 +1,17 @@
 const express = require('express');
 const route = express.Router();
 const multer = require('multer');
-const upload = multer({dest : '../../db/img'});
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './src/public/img/logoPartai');
+  },
+  filename: (req, file, cb) => {
+    cb(null,file.originalname);
+  }
+});
+
+const upload = multer({ storage });
 
 const {getAllPartai, addPartai, deletePartai, updatePartai} = require('../../handler/partaiHandler');
 
