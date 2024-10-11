@@ -3,7 +3,7 @@ const route = express.Router();
 
 route
 .get('/', (req, res) => {
-    res.redirect('http://localhost:80/front-end-pemilu/views/profil_pemerintah.php');
+    res.redirect('http://localhost:80/front-end-pemilu/views/login_page.php');
 });
 
 route
