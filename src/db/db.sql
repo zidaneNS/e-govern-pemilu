@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS profil_panitia (
 CREATE TABLE IF NOT EXISTS partai (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nama VARCHAR(255),
-    logoUrl VARCHAR(255)
+    logoUrl VARCHAR(255),
+    filePath VARCHAR(255)
 );
 
 -- Membuat tabel caleg

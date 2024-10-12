@@ -1,4 +1,6 @@
-const pool = require("../db/db")
+const pool = require("../db/db");
+const fs = require('fs');
+const path = require('path');
 
 // mengambil data caleg
 const getAllPartai = (req, res) => {
@@ -34,8 +36,9 @@ const addPartai = (req, res) => {
     }
 
     const logoUrl = `${req.protocol}://${req.get('host')}/kpu/uploads/logoPartai/${req.file.filename}`;
+    const filePath = `logoPartai/${req.file.filename}`;
 
-    pool.query('INSERT INTO partai (nama, logoUrl) VALUES (?,?)', [nama, logoUrl], (err, results) => {
+    pool.query('INSERT INTO partai (nama, logoUrl, filePath) VALUES (?,?,?)', [nama, logoUrl, filePath], (err, results) => {
         if (err) {
             res.status(500).json({
                 success: false,
@@ -49,7 +52,8 @@ const addPartai = (req, res) => {
                 data: {
                     id : results.insertId,
                     nama,
-                    logoUrl
+                    logoUrl,
+                    filePath
                 }
             })
         }
@@ -59,7 +63,7 @@ const addPartai = (req, res) => {
 const deletePartai = (req, res) => {
     const id = parseInt(req.params.id);
 
-    pool.query('DELETE FROM partai WHERE id=?', [id], (err, results) => {
+    pool.query('SELECT * FROM partai WHERE id=?', [id], (err, results) => {
         if (err) {
             res.status(500).json({
                 success: false,
@@ -67,19 +71,42 @@ const deletePartai = (req, res) => {
                 err
             })
         } else {
-            if (results.affectedRows > 0) {
-                res.status(200).json({
-                    success: true,
-                    message: `data with id ${id} has been deleted`
-                })
+            if (results.length > 0) {
+                const filePath = path.join(__dirname, '..', 'public', 'img', results[0].filePath);
+                fs.unlink(filePath, (err) => {
+                    if (err) {
+                        res.status(500).json({
+                            success: false,
+                            message: 'deleting file error',
+                            err
+                        });
+                    } else {
+                        pool.query('DELETE FROM partai WHERE id=?', [id], (err, results) => {
+                            if (err) {
+                                res.status(500).json({
+                                    success: false,
+                                    message: 'query error',
+                                    err
+                                });
+                            } else {
+                                res.status(200).json({
+                                    success: true,
+                                    message: 'data has been deleted'
+                                });
+                            }
+                        });
+
+                    }
+                });
             } else {
                 res.status(404).json({
                     success: false,
                     message: 'id not found'
-                })
+                });
             }
         }
-    })
+    });
+
 };
 
 const updatePartai = (req, res) => {

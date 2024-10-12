@@ -57,29 +57,49 @@ const addProfilPanitia = (req, res) => {
     // mengambil nilai yang terdapat pada request body
     const {nik, nama, password} = req.body;
 
-    // melakukan query pada pool
-    pool.query('INSERT INTO profil_panitia (nik, nama, password) VALUES (?,?,?)', [nik, nama, password], (err, results) => {
-        // mengirimkan hasil dari query
+    // mengecek apakah ada nip sama 
+    pool.query('SELECT * FROM profil_pantia WHERE nik=?', [nik], (err, results) => {
         if (err) {
-            console.log('error adding data', err)
+            console.log('query error', err);
             res.status(500).json({
                 success: false,
                 message: 'query error',
                 err
-            })
+            });
         } else {
-            res.status(201).json({
-                success: true,
-                message: 'data added',
-                data: {
-                    id: results.insertId,
-                    nik,
-                    nama,
-                    password
-                }
-            })
+            if (results.length > 0) {
+                res.status(400).json({
+                    success: false,
+                    message: 'nik already exists'
+                });
+            } else {
+                // melakukan query pada pool
+                pool.query('INSERT INTO profil_panitia (nik, nama, password) VALUES (?,?,?)', [nik, nama, password], (err, results) => {
+                    // mengirimkan hasil dari query
+                    if (err) {
+                        console.log('query error', err);
+                        res.status(500).json({
+                            success: false,
+                            message: 'query error',
+                            err
+                        });
+                    } else {
+                        res.status(201).json({
+                            success: true,
+                            message: 'data added',
+                            data: {
+                                id: results.insertId,
+                                nik,
+                                nama,
+                                password
+                            }
+                        });
+                    }
+                });
+            }
         }
-    })
+    });
+
 };
 
 // menghapus data profil panitia
@@ -117,43 +137,62 @@ const deleteProfilPanitia = (req, res) => {
 
 // mengudate data profil panitia
 const updateProfilPanitia = (req, res) => {
-    // mengambil id dari parameter request
-    const id = parseInt(req.params.id);
     // mengambil data dari request body
     const {nik, nama, password} = req.body;
+    // mengambil id dari parameter request
+    const id = parseInt(req.params.id);
 
-    // melakukan query pada pool
-    pool.query('UPDATE profil_panitia SET nik=?, nama=?, password=? WHERE id=?', [nik, nama, password, id], (err, results) => {
-        // mengirimkan hasil query
+    // mengecek apakah nik ada yang sama
+    pool.query('SELECT * FROM profil_panitia WHERE nik=?', [nik], (err, results) => {
         if (err) {
-            console.log('error updating data');
             res.status(500).json({
-                success: false,
+                success:false,
                 message: 'query error',
                 err
-            })
+            });
         } else {
-            // jika terdapat data yang berubah maka respon sukses
-            if (results.affectedRows > 0) {
-                res.status(200).json({
-                    success: true,
-                    message: `data with id ${id} has been updated`,
-                    data: {
-                        id,
-                        nik,
-                        nama,
-                        password
-                    }
-                })
-            // jika tidak ada data yang berubah maka respon gagal
-            } else {
-                res.status(404).json({
+            if (results.length > 0) {
+                res.status(400).json({
                     success: false,
-                    message: 'id not found', 
-                })
+                    message: 'nik already exist'
+                });
+            } else {
+                // melakukan query pada pool
+                pool.query('UPDATE profil_panitia SET nik=?, nama=?, password=? WHERE id=?', [nik, nama, password, id], (err, results) => {
+                    // mengirimkan hasil query
+                    if (err) {
+                        console.log('error updating data');
+                        res.status(500).json({
+                            success: false,
+                            message: 'query error',
+                            err
+                        });
+                    } else {
+                        // jika terdapat data yang berubah maka respon sukses
+                        if (results.affectedRows > 0) {
+                            res.status(200).json({
+                                success: true,
+                                message: `data with id ${id} has been updated`,
+                                data: {
+                                    id,
+                                    nik,
+                                    nama,
+                                    password
+                                }
+                            });
+                        // jika tidak ada data yang berubah maka respon gagal
+                        } else {
+                            res.status(404).json({
+                                success: false,
+                                message: 'id not found', 
+                            });
+                        }
+                    }
+                });
             }
         }
-    })
+    });
+    
 };
 
 module.exports = {getAllProfilPanitia, getProfilPanitiaById, addProfilPanitia, deleteProfilPanitia, updateProfilPanitia};
