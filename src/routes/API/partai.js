@@ -6,8 +6,11 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, './src/public/img/logoPartai');
   },
-  filename: (req, file, cb) => {
-    cb(null,file.originalname);
+  filename: async (req, file, cb) => {
+    await cb(null, `${new Date().getTime()}-${file.originalname}`);
+  },
+  limits: {
+    fileSize: 10 * 1024 * 1024
   }
 });
 
