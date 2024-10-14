@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS caleg (
     id_partai INT,
     nama VARCHAR(255),
     imgUrl VARCHAR(255),
+    filePath VARCHAR(255),
     id_pegawai INT,
     category ENUM ('presiden wapres', 'dpr') NOT NULL,
     FOREIGN KEY (id_partai) REFERENCES partai(id),
