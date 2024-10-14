@@ -174,7 +174,7 @@ const updateProfilPemerintah = (req, res) => {
                 err
             });
         } else {
-            if (results.length > 0) {
+            if (results.length > 1) {
                 res.status(400).json({
                     success: false,
                     message: 'nip already exist'

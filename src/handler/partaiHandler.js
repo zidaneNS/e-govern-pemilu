@@ -110,42 +110,89 @@ const deletePartai = (req, res) => {
 };
 
 const updatePartai = (req, res) => {
-    const {nama} = req.body;
+    const { nama } = req.body;
     const id = parseInt(req.params.id);
-    let logoUrl;
+    const isUpdateFile = req.file ? true : false;
+    const query = isUpdateFile ? 'UPDATE partai SET nama=?, logoUrl=?, filePath=? WHERE id=?' : 'UPDATE partai SET nama=? WHERE id=?';
 
-    if (req.file) {
-        logoUrl = req.file.path;
-    }
+    // Generate the new file URL and file path
+    const logoUrl = isUpdateFile ? `${req.protocol}://${req.get('host')}/kpu/uploads/logoPartai/${req.file.filename}` : null;
+    const filePath = isUpdateFile ? `logoPartai/${req.file.filename}` : null;
 
-    const query = logoUrl ? 'UPDATE partai SET nama=? WHERE id=?' : 'UPDATE partai SET nama=?, logoUrl=? WHERE id=?';
+    // Determine statement for SQL update
+    const stmt = isUpdateFile ? [nama, logoUrl, filePath, id] : [nama, id];
 
-    pool.query(query, logoUrl ? [nama, id] : [nama, logoUrl, id], (err, results) => {
+    // Find existing data in the database
+    pool.query('SELECT * FROM partai WHERE id=?', [id], (err, results) => {
         if (err) {
-            res.status(500).json({
+            return res.status(500).json({
                 success: false,
-                message: 'query error',
+                message: 'Query error',
                 err
-            })
-        } else {
-            if (results.affectedRows > 0) {
-                res.status(200).json({
-                    success: true,
-                    message: `data with id ${id} has been updated`,
-                    data: {
-                        id,
-                        nama,
-                        logoUrl
-                    }
-                })
-            } else {
-                res.status(404).json({
-                    success: false,
-                    message: 'id not found'
-                })
-            }
+            });
         }
-    })
+        
+        if (results.length > 0) {
+            // Check if there's a new file to update
+            if (isUpdateFile) {
+                const oldFilePath = path.join(__dirname, '..', 'public', 'img', results[0].filePath);
+                
+                // Delete the old file
+                fs.unlink(oldFilePath, (err) => {
+                    if (err) {
+                        return res.status(500).json({
+                            success: false,
+                            message: 'Error deleting old file',
+                            err
+                        });
+                    }
+                    
+                    // Proceed to update the database after deleting the old file
+                    pool.query(query, stmt, (err, results) => {
+                        if (err) {
+                            return res.status(500).json({
+                                success: false,
+                                message: 'Query error during update',
+                                err
+                            });
+                        }
+                        
+                        res.status(200).json({
+                            success: true,
+                            message: 'Data updated successfully',
+                            data: {
+                                id,
+                                nama,
+                                logoUrl,
+                                filePath
+                            }
+                        });
+                    });
+                });
+            } else {
+                // No new file; just update the name
+                pool.query(query, stmt, (err, results) => {
+                    if (err) {
+                        return res.status(500).json({
+                            success: false,
+                            message: 'Query error during name update',
+                            err
+                        });
+                    }
+                    
+                    res.status(200).json({
+                        success: true,
+                        message: 'Data updated successfully'
+                    });
+                });
+            }
+        } else {
+            res.status(404).json({
+                success: false,
+                message: 'ID not found'
+            });
+        }
+    });
 };
 
 module.exports = {getAllPartai, addPartai, deletePartai, updatePartai};

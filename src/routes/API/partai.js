@@ -6,8 +6,8 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, './src/public/img/logoPartai');
   },
-  filename: async (req, file, cb) => {
-    await cb(null, `${new Date().getTime()}-${file.originalname}`);
+  filename: (req, file, cb) => {
+    cb(null, `${new Date().getTime()}-${file.originalname}`);
   },
   limits: {
     fileSize: 10 * 1024 * 1024
@@ -22,6 +22,6 @@ route
 .get('/', getAllPartai)
 .post('/', upload.single('image'), addPartai)
 .delete('/:id', deletePartai)
-.put('/:id', updatePartai);
+.put('/:id', upload.single('image'), updatePartai);
 
 module.exports = route;

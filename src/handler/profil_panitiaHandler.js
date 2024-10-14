@@ -58,7 +58,7 @@ const addProfilPanitia = (req, res) => {
     const {nik, nama, password} = req.body;
 
     // mengecek apakah ada nip sama 
-    pool.query('SELECT * FROM profil_pantia WHERE nik=?', [nik], (err, results) => {
+    pool.query('SELECT * FROM profil_panitia WHERE nik=?', [nik], (err, results) => {
         if (err) {
             console.log('query error', err);
             res.status(500).json({
@@ -151,7 +151,7 @@ const updateProfilPanitia = (req, res) => {
                 err
             });
         } else {
-            if (results.length > 0) {
+            if (results.length > 1) {
                 res.status(400).json({
                     success: false,
                     message: 'nik already exist'
