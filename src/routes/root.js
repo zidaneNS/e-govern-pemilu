@@ -16,9 +16,12 @@ route.get('/profil_pemerintah', (req, res) => {
 route.get('/partai', (req, res) => {
     res.redirect('http://localhost:80/front-end-pemilu/views/partai.php');
 });
+route.get('/caleg', (req, res) => {
+    res.redirect('http://localhost:80/front-end-pemilu/views/caleg.php');
+});
 
 route.get('/logout', (req, res) => {
     res.redirect('http://localhost:80/front-end-pemilu/includes/logout.inc.php');
 });
 
-module.exports = route
+module.exports = route;

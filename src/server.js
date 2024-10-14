@@ -18,7 +18,7 @@ app.use(cors());
 app.use(root);
 
 app.use('/api', api_key);
-app.use('/kpu/uploads', express.static(path.join(__dirname, 'public', 'img')));
+app.use('/kpu/uploads', express.static(path.join(__dirname, '..', 'public', 'img')));
 app.use('/api/kpu/profil_pemerintah', profil_pemerintah);
 app.use('/api/kpu/profil_panitia', profil_panitia);
 app.use('/api/kpu/partai', partai);
