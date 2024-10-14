@@ -72,7 +72,7 @@ const deletePartai = (req, res) => {
             })
         } else {
             if (results.length > 0) {
-                const filePath = path.join(__dirname, '..', 'public', 'img', results[0].filePath);
+                const filePath = path.join(__dirname, '..', '..', 'public', 'img', results[0].filePath);
                 fs.unlink(filePath, (err) => {
                     if (err) {
                         res.status(500).json({
@@ -135,7 +135,7 @@ const updatePartai = (req, res) => {
         if (results.length > 0) {
             // Check if there's a new file to update
             if (isUpdateFile) {
-                const oldFilePath = path.join(__dirname, '..', 'public', 'img', results[0].filePath);
+                const oldFilePath = path.join(__dirname, '..', '..', 'public', 'img', results[0].filePath);
                 
                 // Delete the old file
                 fs.unlink(oldFilePath, (err) => {
