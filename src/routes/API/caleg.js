@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-const {getAllCaleg, addCaleg, deleteCaleg, updateCaleg} = require('../../handler/calegHandler');
+const {getAllCaleg, getCalegByCategory, addCaleg, deleteCaleg, updateCaleg} = require('../../handler/calegHandler');
 
 route
 .get('/', getAllCaleg)

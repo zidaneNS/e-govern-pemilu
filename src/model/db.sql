@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS caleg (
     filePath VARCHAR(255),
     id_pegawai INT,
     category ENUM ('presiden wapres', 'dpr') NOT NULL,
+    no_urut INT,
     FOREIGN KEY (id_partai) REFERENCES partai(id),
     FOREIGN KEY (id_pegawai) REFERENCES profil_pemerintah(id)
 );

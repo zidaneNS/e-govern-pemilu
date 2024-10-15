@@ -10,14 +10,14 @@ const getAllCaleg = (req, res) => {
         // mengirimkan hasil dari query
         if (err) {
             console.log('query error', err);
-            res.status(500).json({
-                status: 'fail',
+            return res.status(500).json({
+                success: false,
                 message: 'error retrieving data',
                 data : err
             });
         } else {
             res.status(200).json({
-                status: 'success',
+                success: true,
                 message: 'success retrieving all datas',
                 data : results
             })
@@ -26,41 +26,58 @@ const getAllCaleg = (req, res) => {
 };
 
 const addCaleg = (req, res) => {
-    const {id_partai, nama, id_pegawai, category} = req.body;
+    const {id_partai, nama, id_pegawai, category, no_urut} = req.body;
 
     if (!req.file) {
-        res.status(400).json({
+        return res.status(400).json({
             success: false,
             message: 'no file uploaded'
-        })
+        });
+    }
+
+    if (category !== 'dpr' && category !== 'presiden wapres') {
+        return res.status(400).json({
+            success: false,
+            message: 'category invalid'
+        });
     }
 
     const imgUrl = `${req.protocol}://${req.get('host')}/kpu/uploads/profilImg/${req.file.filename}`;
     const filePath = `profilImg/${req.file.filename}`;
-
-    pool.query('INSERT INTO caleg (id_partai, nama, imgUrl, filePath, id_pegawai, category) VALUES (?,?,?,?,?,?)', [id_partai, nama, imgUrl, filePath, id_pegawai, category], (err, results) => {
+    pool.query('SELECT * FROM caleg WHERE category=?', [category], (err, results) => {
         if (err) {
-            res.status(500).json({
+            return res.status(500).json({
                 success: false,
-                message: 'query error',
-                err
-            })
+                message: 'query error'
+            });
         } else {
-            res.status(201).json({
-                success: true,
-                message: 'data added',
-                data: {
-                    id : results.insertId,
-                    id_partai,
-                    nama,
-                    imgUrl,
-                    filePath,
-                    id_pegawai,
-                    category
+            const no_urut = results.length + 1;
+            pool.query('INSERT INTO caleg (id_partai, nama, imgUrl, filePath, id_pegawai, category, no_urut) VALUES (?,?,?,?,?,?,?)', [id_partai, nama, imgUrl, filePath, id_pegawai, category, no_urut], (err, results) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'query error',
+                        err
+                    })
+                } else {
+                    res.status(201).json({
+                        success: true,
+                        message: 'data added',
+                        data: {
+                            id : results.insertId,
+                            id_partai,
+                            nama,
+                            imgUrl,
+                            filePath,
+                            id_pegawai,
+                            category,
+                            no_urut
+                        }
+                    })
                 }
-            })
+            });
         }
-    })
+    });
 };
 
 const deleteCaleg = (req, res) => {
@@ -68,7 +85,7 @@ const deleteCaleg = (req, res) => {
 
     pool.query('SELECT * FROM caleg WHERE id=?', [id], (err, results) => {
         if (err) {
-            res.status(500).json({
+            return res.status(500).json({
                 success: false,
                 message: 'query error',
                 err
@@ -78,7 +95,7 @@ const deleteCaleg = (req, res) => {
                 const filePath = path.join(__dirname, '..', '..', 'public', 'img', results[0].filePath);
                 fs.unlink(filePath, (err) => {
                     if (err) {
-                        res.status(500).json({
+                        return res.status(500).json({
                             success: false,
                             message: 'deleting file error',
                             err
@@ -86,7 +103,7 @@ const deleteCaleg = (req, res) => {
                     } else {
                         pool.query('DELETE FROM caleg WHERE id=?', [id], (err, results) => {
                             if (err) {
-                                res.status(500).json({
+                                return res.status(500).json({
                                     success: false,
                                     message: 'query error',
                                     err
@@ -102,7 +119,7 @@ const deleteCaleg = (req, res) => {
                     }
                 });
             } else {
-                res.status(404).json({
+                return res.status(404).json({
                     success: false,
                     message: 'id not found'
                 });
@@ -113,17 +130,17 @@ const deleteCaleg = (req, res) => {
 };
 
 const updateCaleg = (req, res) => {
-    const { id_partai, nama, id_pegawai, category } = req.body;
+    const { id_partai, nama, id_pegawai, category, no_urut } = req.body;
     const id = parseInt(req.params.id);
     const isUpdateFile = req.file ? true : false;
-    const query = isUpdateFile ? 'UPDATE caleg SET id_partai=?, nama=?, imgUrl=?, filePath=?, id_pegawai=?, category=? WHERE id=?' : 'UPDATE caleg SET id_partai=?, nama=?, id_pegawai=?, category=? WHERE id=?';
+    const query = isUpdateFile ? 'UPDATE caleg SET id_partai=?, nama=?, imgUrl=?, filePath=?, id_pegawai=?, category=?, no_urut=? WHERE id=?' : 'UPDATE caleg SET id_partai=?, nama=?, id_pegawai=?, category=?, no_urut=? WHERE id=?';
 
     // Generate the new file URL and file path
     const imgUrl = isUpdateFile ? `${req.protocol}://${req.get('host')}/kpu/uploads/profilImg/${req.file.filename}` : null;
     const filePath = isUpdateFile ? `profilImg/${req.file.filename}` : null;
 
     // Determine statement for SQL update
-    const stmt = isUpdateFile ? [id_partai, nama, imgUrl, filePath, id_pegawai, category, id] : [id_partai, nama, id_pegawai, category, id];
+    const stmt = isUpdateFile ? [id_partai, nama, imgUrl, filePath, id_pegawai, category, no_urut, id] : [id_partai, nama, id_pegawai, category, no_urut, id];
 
     // Find existing data in the database
     pool.query('SELECT * FROM caleg WHERE id=?', [id], (err, results) => {
@@ -170,7 +187,8 @@ const updateCaleg = (req, res) => {
                                 imgUrl,
                                 filePath,
                                 id_pegawai,
-                                category
+                                category,
+                                no_urut
                             }
                         });
                     });
@@ -193,7 +211,7 @@ const updateCaleg = (req, res) => {
                 });
             }
         } else {
-            res.status(404).json({
+            return res.status(404).json({
                 success: false,
                 message: 'ID not found'
             });
